@@ -170,7 +170,7 @@ export default function IngredientsSection() {
             className="aspect-[3/4] rounded-3xl overflow-hidden shadow-xl shadow-heritage-dark/5 relative border border-heritage-dark/5"
           >
             <img 
-              src="/vjhomefoods/VJ WEBSITE SIDE 2.jpg"
+              src="/VJ WEBSITE SIDE 2.jpg"
               alt="Fresh Preparation"
               className="w-full h-full object-cover"
               referrerPolicy="no-referrer"
@@ -183,7 +183,7 @@ export default function IngredientsSection() {
             className="aspect-[3/4] rounded-3xl overflow-hidden shadow-xl shadow-heritage-dark/5 relative border border-heritage-dark/5"
           >
             <img 
-              src="/vjhomefoods/VJ WEBSITE SIDE PHOTO 1.webp"
+              src="/VJ WEBSITE SIDE PHOTO 1.webp"
               alt="Delicious Heritage Meal"
               className="w-full h-full object-cover"
               referrerPolicy="no-referrer"
@@ -202,7 +202,7 @@ export default function IngredientsSection() {
         className="absolute left-[-15%] sm:left-[-11%] xl:left-[-8%] 2xl:left-[-5%] top-1/2 w-[28vw] max-w-[420px] h-[85vh] max-h-[850px] rounded-[4.5rem] overflow-hidden shadow-[0_30px_60px_rgba(10,10,10,0.15)] hidden md:block border border-heritage-dark/5 z-0 pointer-events-none"
       >
         <img 
-          src="/vjhomefoods/VJ WEBSITE SIDE PHOTO 1.webp"
+          src="/VJ WEBSITE SIDE PHOTO 1.webp"
           alt="Fresh Preparation"
           className="w-full h-full object-cover"
           referrerPolicy="no-referrer"
@@ -216,7 +216,7 @@ export default function IngredientsSection() {
         className="absolute right-[-15%] sm:right-[-11%] xl:right-[-8%] 2xl:left-[-5%] top-1/2 w-[28vw] max-w-[420px] h-[85vh] max-h-[850px] rounded-[4.5rem] overflow-hidden shadow-[0_30px_60px_rgba(10,10,10,0.15)] hidden md:block border border-heritage-dark/5 z-0 pointer-events-none"
       >
         <img 
-          src="/vjhomefoods/VJ WEBSITE SIDE 2.jpg"
+          src="/VJ WEBSITE SIDE 2.jpg"
           alt="Delicious Heritage Meal"
           className="w-full h-full object-cover"
           referrerPolicy="no-referrer"

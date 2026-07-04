@@ -16,7 +16,7 @@ export default function Loader() {
             className="w-72 h-72 md:w-96 md:h-96 flex items-center justify-center p-4"
           >
             <img 
-              src="/vjhomefoods/vj-logo-transparent.png" 
+              src="/vj-logo-transparent.png" 
               alt="VJ Home Foods Logo" 
               className="w-full h-full object-contain"
             />

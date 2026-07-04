@@ -4,7 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import {
   Coffee, Sun, Moon, MapPin, LogOut, RefreshCw, AlertCircle,
-  Truck, User, Phone, Package, LayoutDashboard
+  Truck, User, Phone, Package, LayoutDashboard, ChevronDown,
+  ChevronUp, SlidersHorizontal, ArrowUpDown
 } from 'lucide-react';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -83,6 +84,11 @@ export default function DeliveryDashboardScreen() {
   const [updating,  setUpdating]  = useState<string | null>(null);
   const [markingAll, setMarkingAll] = useState(false);
 
+  // Custom Delivery Dashboard states
+  const [selectedSession, setSelectedSession] = useState<'bf' | 'lunch' | 'dinner'>('bf');
+  const [expandedBatchId, setExpandedBatchId] = useState<string | null>(null);
+  const [isArranging, setIsArranging] = useState(false);
+
   // Profile state
   const [profile,        setProfile]        = useState<DriverProfile | null>(null);
   const [profileLoading, setProfileLoading] = useState(false);
@@ -100,12 +106,50 @@ export default function DeliveryDashboardScreen() {
     try {
       const res = await api.get('/orders/delivery/dashboard');
       setDate(res.data?.date || '');
-      setTasks(res.data?.tasks || []);
+      const fetchedTasks: Task[] = res.data?.tasks || [];
+
+      // Sort fetchedTasks by saved localStorage order
+      const savedOrder = localStorage.getItem('vj_batch_order');
+      if (savedOrder) {
+        try {
+          const orderArray: string[] = JSON.parse(savedOrder);
+          fetchedTasks.sort((a, b) => {
+            const idxA = orderArray.indexOf(a.batchId);
+            const idxB = orderArray.indexOf(b.batchId);
+            if (idxA === -1 && idxB === -1) return 0;
+            if (idxA === -1) return 1;
+            if (idxB === -1) return -1;
+            return idxA - idxB;
+          });
+        } catch (e) {
+          console.error(e);
+        }
+      }
+      setTasks(fetchedTasks);
     } catch {
       triggerToast('⚠️ Failed to load delivery route sheet');
     } finally {
       setLoading(false);
     }
+  };
+
+  // ── Move Task in arrangement mode ──
+  const moveTask = (index: number, direction: 'up' | 'down') => {
+    const newTasks = [...tasks];
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= newTasks.length) return;
+
+    // Swap
+    const temp = newTasks[index];
+    newTasks[index] = newTasks[targetIndex];
+    newTasks[targetIndex] = temp;
+
+    setTasks(newTasks);
+
+    // Save preferred sequence to localStorage
+    const orderIds = newTasks.map(t => t.batchId);
+    localStorage.setItem('vj_batch_order', JSON.stringify(orderIds));
+    triggerToast('✅ Route order updated!');
   };
 
   // ── Load profile ──
@@ -197,7 +241,7 @@ export default function DeliveryDashboardScreen() {
           </span>
         </div>
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center select-none pointer-events-none">
-          <img src="/vjhomefoods/vj-logo-transparent.png" alt="VJ Logo" className="h-11 object-contain" />
+          <img src="/vj-logo-transparent.png" alt="VJ Logo" className="h-11 object-contain" />
         </div>
         <button
           onClick={handleLogout}
@@ -244,26 +288,63 @@ export default function DeliveryDashboardScreen() {
                   Today: {date || '…'}
                 </p>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => setIsArranging(!isArranging)}
+                  disabled={loading || tasks.length === 0}
+                  className={`flex items-center gap-1 py-1.5 px-2.5 rounded-xl border text-[9px] font-black uppercase tracking-wider transition cursor-pointer ${
+                    isArranging
+                      ? 'bg-brand text-white border-brand'
+                      : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                  }`}
+                  title="Arrange Batches Sequence"
+                >
+                  <SlidersHorizontal className="w-3 h-3" />
+                  <span>{isArranging ? 'Done' : 'Arrange'}</span>
+                </button>
                 <button
                   onClick={handleMarkAllOnDelivery}
                   disabled={markingAll || loading || tasks.length === 0}
-                  className="flex items-center gap-1.5 px-3 py-2 bg-brand hover:bg-brand-dark disabled:opacity-50 text-white text-[10px] font-black uppercase tracking-wider rounded-xl shadow-xs transition cursor-pointer"
+                  className="flex items-center gap-1 py-1.5 px-2.5 bg-brand hover:bg-brand-dark disabled:opacity-50 text-white text-[9px] font-black uppercase tracking-wider rounded-xl shadow-xs transition cursor-pointer"
                   title="Mark all pending sessions as On Delivery"
                 >
                   {markingAll
-                    ? <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    : <Truck className="w-3.5 h-3.5" />}
+                    ? <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    : <Truck className="w-3 h-3" />}
                   <span>On Delivery All</span>
                 </button>
                 <button
                   onClick={loadDashboard}
-                  className="p-2 bg-white border border-slate-200 rounded-xl shadow-3xs text-slate-600 hover:text-brand transition cursor-pointer"
+                  className="p-1.5 bg-white border border-slate-200 rounded-xl shadow-3xs text-slate-600 hover:text-brand transition cursor-pointer"
                   title="Refresh"
                 >
-                  <RefreshCw className="w-4 h-4" />
+                  <RefreshCw className="w-3.5 h-3.5" />
                 </button>
               </div>
+            </div>
+
+            {/* Session selector sub-tabs */}
+            <div className="flex bg-slate-100 p-1 rounded-2xl border border-slate-200/50 gap-1.5 select-none">
+              {(['bf', 'lunch', 'dinner'] as const).map((s) => {
+                const Icon = s === 'bf' ? Coffee : s === 'lunch' ? Sun : Moon;
+                const label = s === 'bf' ? 'Breakfast' : s === 'lunch' ? 'Lunch' : 'Dinner';
+                return (
+                  <button
+                    key={s}
+                    type="button"
+                    onClick={() => setSelectedSession(s)}
+                    className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider transition cursor-pointer ${
+                      selectedSession === s
+                        ? 'bg-white text-brand shadow-xs border border-slate-200/50 font-black'
+                        : 'text-slate-500 hover:text-slate-700'
+                    }`}
+                  >
+                    <Icon className="w-3.5 h-3.5" />
+                    <span>{label}</span>
+                  </button>
+                );
+              })}
             </div>
 
             {loading ? (
@@ -281,53 +362,118 @@ export default function DeliveryDashboardScreen() {
               </div>
             ) : (
               <div className="space-y-4">
-                {tasks.map((task) => (
-                  <div key={task.batchId} className="bg-white border border-slate-200/60 rounded-2xl p-4 space-y-3.5 shadow-xs">
-                    <div className="flex items-start gap-3">
-                      <div className="w-9 h-9 bg-brand/10 text-brand rounded-xl flex items-center justify-center shrink-0">
-                        <MapPin className="w-4 h-4" />
+                {tasks.map((task, index) => (
+                  <div key={task.batchId} className="bg-white border border-slate-200/60 rounded-2xl p-4 space-y-3 shadow-xs">
+                    
+                    {/* Card Header (Batch details) */}
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-start gap-2.5 min-w-0">
+                        <div className="w-9 h-9 bg-brand/10 text-brand rounded-xl flex items-center justify-center shrink-0">
+                          <MapPin className="w-4 h-4" />
+                        </div>
+                        <div className="min-w-0">
+                          <h3 
+                            onClick={() => setExpandedBatchId(expandedBatchId === task.batchId ? null : task.batchId)}
+                            className="text-sm font-black text-slate-900 flex items-center gap-1 cursor-pointer select-none hover:text-brand transition"
+                          >
+                            <span className="truncate">{task.batchName}</span>
+                            <span className="text-[10px] text-slate-400 font-bold shrink-0">({task.batchId})</span>
+                            <ChevronDown className={`w-3.5 h-3.5 text-slate-400 shrink-0 transition-transform ${expandedBatchId === task.batchId ? 'rotate-180' : ''}`} />
+                          </h3>
+                          <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mt-0.5">
+                            Click name to view address/contact
+                          </span>
+                        </div>
                       </div>
-                      <div>
-                        <h3 className="text-sm font-black text-slate-900">
-                          {task.batchName} <span className="text-slate-400 font-bold">({task.batchId})</span>
-                        </h3>
-                        <p className="text-[10px] text-slate-400 font-bold mt-0.5">{task.location || '—'}</p>
-                        {task.phone && (
-                          <p className="text-[9px] text-brand font-black uppercase tracking-wider mt-1">📞 {task.phone}</p>
-                        )}
-                      </div>
+
+                      {/* Up/Down arranging controls */}
+                      {isArranging && (
+                        <div className="flex gap-1 shrink-0 select-none">
+                          <button
+                            type="button"
+                            disabled={index === 0}
+                            onClick={() => moveTask(index, 'up')}
+                            className="p-1.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-600 disabled:opacity-20 hover:text-brand cursor-pointer"
+                          >
+                            <ChevronUp className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            disabled={index === tasks.length - 1}
+                            onClick={() => moveTask(index, 'down')}
+                            className="p-1.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-600 disabled:opacity-20 hover:text-brand cursor-pointer"
+                          >
+                            <ChevronDown className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      )}
                     </div>
 
-                    <div className="grid grid-cols-3 gap-3 border-t border-slate-100 pt-3.5">
-                      {(['bf', 'lunch', 'dinner'] as const).map((session) => {
-                        const Icon  = session === 'bf' ? Coffee : session === 'lunch' ? Sun : Moon;
-                        const label = session === 'bf' ? 'Breakfast' : session === 'lunch' ? 'Lunch' : 'Dinner';
-                        const detail = task.meals[session] || { qty: 0, count: 0 };
-                        const st    = task.status[session];
-                        const key   = `${task.batchId}-${session}`;
-                        return (
-                          <div key={session} className="flex flex-col items-center gap-1.5">
-                            <div className="flex items-center gap-1">
-                              <Icon className="w-3.5 h-3.5 text-slate-400" />
-                              <span className="text-[9px] font-black text-slate-400 uppercase">{label}</span>
-                            </div>
-                            <div className="text-center">
-                              <span className="text-xs font-black text-slate-800 block">{detail.qty} meals</span>
-                              <span className="text-[8px] font-black text-brand uppercase tracking-tight block mt-0.5">
-                                ({detail.count} member{detail.count !== 1 ? 's' : ''})
-                              </span>
-                            </div>
-                            <button
-                              onClick={() => handleStatusCycle(task.batchId, session, st)}
-                              disabled={updating !== null}
-                              className={`w-full py-1.5 border rounded-lg text-[9px] font-black uppercase tracking-wider text-center cursor-pointer transition select-none ${statusClasses(st)}`}
+                    {/* Expandable Location & Contact Info */}
+                    {expandedBatchId === task.batchId && (
+                      <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200/50 space-y-3 animate-fade-in text-xs">
+                        {/* Location Section */}
+                        <div className="space-y-0.5">
+                          <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider block">📍 Delivery Location</span>
+                          <p className="font-bold text-slate-700 leading-snug">{task.location || 'No location provided'}</p>
+                          {task.location && (
+                            <a
+                              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(task.location)}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 text-[10px] font-black text-brand uppercase tracking-wider hover:underline pt-0.5"
                             >
-                              {updating === key ? 'Updating…' : st}
-                            </button>
+                              🧭 Move to Map
+                            </a>
+                          )}
+                        </div>
+                        {/* Phone Section */}
+                        <div className="space-y-0.5">
+                          <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider block">📞 Contact Number</span>
+                          <p className="font-bold text-slate-700">{task.phone || 'No phone number'}</p>
+                          {task.phone && (
+                            <a
+                              href={`tel:${task.phone}`}
+                              className="inline-flex items-center gap-1 text-[10px] font-black text-brand uppercase tracking-wider hover:underline pt-0.5"
+                            >
+                              📞 Contact to Call
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Meal details for selected session */}
+                    {(() => {
+                      const session = selectedSession;
+                      const Icon = session === 'bf' ? Coffee : session === 'lunch' ? Sun : Moon;
+                      const label = session === 'bf' ? 'Breakfast' : session === 'lunch' ? 'Lunch' : 'Dinner';
+                      const detail = task.meals[session] || { qty: 0, count: 0 };
+                      const st = task.status[session];
+                      const key = `${task.batchId}-${session}`;
+
+                      return (
+                        <div className="flex items-center justify-between border-t border-slate-100 pt-3">
+                          <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-500">
+                              <Icon className="w-4 h-4 text-slate-400" />
+                            </div>
+                            <div>
+                              <span className="text-[9px] font-black text-slate-400 uppercase block">{label} Session</span>
+                              <span className="text-xs font-black text-slate-800">{detail.qty} meals ({detail.count} members)</span>
+                            </div>
                           </div>
-                        );
-                      })}
-                    </div>
+                          <button
+                            type="button"
+                            onClick={() => handleStatusCycle(task.batchId, session, st)}
+                            disabled={updating !== null}
+                            className={`px-4 py-2 border rounded-xl text-xs font-black uppercase tracking-wider cursor-pointer transition select-none min-w-[100px] text-center ${statusClasses(st)}`}
+                          >
+                            {updating === key ? 'Updating…' : st}
+                          </button>
+                        </div>
+                      );
+                    })()}
                   </div>
                 ))}
               </div>

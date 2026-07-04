@@ -1,7 +1,10 @@
 import axios from 'axios';
 
-const hostname = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
-const baseURL = `http://${hostname}:5002/api`;
+let rawBaseURL = import.meta.env.VITE_API_URL as string || 'https://vjhomefoods.onrender.com/api';
+// Remove trailing slash if any
+rawBaseURL = rawBaseURL.replace(/\/$/, '');
+// Append /api if not already present
+const baseURL = rawBaseURL.endsWith('/api') ? rawBaseURL : `${rawBaseURL}/api`;
 
 const api = axios.create({
   baseURL

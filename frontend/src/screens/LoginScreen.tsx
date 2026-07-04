@@ -51,7 +51,7 @@ export default function LoginScreen() {
     <div
       className="min-h-screen relative overflow-hidden flex items-center justify-center p-4 bg-cover bg-center"
       style={{
-        backgroundImage: "url('/vjhomefoods/Loginbg.jpg'), url('/Loginbg.jpg')",
+        backgroundImage: "url('/Loginbg.jpg')",
         backgroundColor: '#F0E6D3'
       }}
     >
@@ -74,7 +74,7 @@ export default function LoginScreen() {
           {/* VJ Logo — larger */}
           <div className="relative z-10 pt-7 pb-2 flex justify-center">
             <img
-              src="/vjhomefoods/vj-logo-transparent.png"
+              src="/vj-logo-transparent.png"
               alt="VJ Home Foods"
               className="h-24 w-auto object-contain select-none"
               style={{ filter: 'drop-shadow(0 3px 10px rgba(0,0,0,0.30))' }}
@@ -182,7 +182,7 @@ export default function LoginScreen() {
                   onChange={(e) => setUsername(e.target.value)}
                   autoCapitalize="none"
                   autoCorrect="off"
-                  className="w-full h-12 rounded-xl pl-10 pr-4 text-sm text-slate-800 bg-white placeholder:text-slate-400 transition"
+                  className="w-full h-12 rounded-xl pl-10 pr-4 text-[16px] text-slate-800 bg-white placeholder:text-slate-400 transition"
                   style={{ border: '1.5px solid #E5E7EB', outline: 'none' }}
                   onFocus={e => (e.target.style.borderColor = '#FF6B00')}
                   onBlur={e  => (e.target.style.borderColor = '#E5E7EB')}
@@ -208,7 +208,7 @@ export default function LoginScreen() {
                   onChange={(e) => setPassword(e.target.value)}
                   autoCapitalize="none"
                   autoCorrect="off"
-                  className="w-full h-12 rounded-xl pl-10 pr-16 text-sm text-slate-800 bg-white placeholder:text-slate-400 transition"
+                  className="w-full h-12 rounded-xl pl-10 pr-16 text-[16px] text-slate-800 bg-white placeholder:text-slate-400 transition"
                   style={{ border: '1.5px solid #E5E7EB', outline: 'none' }}
                   onFocus={e => (e.target.style.borderColor = '#FF6B00')}
                   onBlur={e  => (e.target.style.borderColor = '#E5E7EB')}

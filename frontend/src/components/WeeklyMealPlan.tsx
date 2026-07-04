@@ -89,7 +89,7 @@ export default function WeeklyMealPlan() {
           {/* Menu Image Display */}
           <div className="w-full max-w-[500px] bg-white rounded-2xl overflow-hidden border border-slate-200 p-2.5 shadow-md mb-8">
             <img 
-              src="/vjhomefoods/assets/weekly_menu.png" 
+              src="/assets/weekly_menu.png" 
               alt="VJ Weekly Menu" 
               className="w-full h-auto object-contain"
             />

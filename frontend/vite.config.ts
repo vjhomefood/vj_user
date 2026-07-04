@@ -7,7 +7,9 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
-  base: '/vjhomefoods/',
+  esbuild: {
+    drop: ['console', 'debugger'],
+  },
   server: {
     port: 3000,
     open: true,

@@ -66,7 +66,7 @@ export default function Hero({ onReady, start, scrollClipPath, isScrolled, scrol
               onLoadedData={handleVideoReady}
               className="w-full h-full object-cover"
             >
-              <source src="/vjhomefoods/VJ HOMEFOOD WEBSITE.mp4" type="video/mp4" />
+              <source src="/VJ HOMEFOOD WEBSITE.mp4" type="video/mp4" />
             </video>
           </motion.div>
         </motion.div>
@@ -142,7 +142,7 @@ export default function Hero({ onReady, start, scrollClipPath, isScrolled, scrol
             className="flex items-center justify-center w-72 h-72 sm:w-[320px] sm:h-[320px] md:w-[450px] md:h-[450px] relative group"
           >
             <img 
-              src="/vjhomefoods/vj-logo-transparent.png" 
+              src="/vj-logo-transparent.png" 
               alt="VJ Home Foods Logo" 
               className="w-full h-full object-contain relative z-10"
             />

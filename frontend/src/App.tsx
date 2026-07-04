@@ -12,6 +12,7 @@ import IngredientsSection from "./components/IngredientsSection";
 import WeeklyMealPlan from "./components/WeeklyMealPlan";
 import FinalCTA from "./components/FinalCTA";
 import { useAuthStore } from "./store/useAuthStore";
+import { Utensils, BookOpen, Clock, User as UserIcon, MapPin, ChevronDown, Hash } from 'lucide-react';
 
 // Lazy load screen components for optimized initial bundle loading
 const LoginScreen = lazy(() => import("./screens/LoginScreen"));
@@ -37,6 +38,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+type TabType = "dashboard" | "menu" | "bills" | "profile";
 function DeliveryProtectedRoute({ children }: { children: React.ReactNode }) {
   const token       = useAuthStore((s) => s.token);
   const user        = useAuthStore((s) => s.user);
@@ -52,9 +54,6 @@ function DeliveryProtectedRoute({ children }: { children: React.ReactNode }) {
 }
 
 /* ─── User Layout (Header + Content + Bottom Nav) ─── */
-type TabType = "dashboard" | "menu" | "bills" | "profile";
-
-import { Utensils, BookOpen, Clock, User as UserIcon, MapPin, ChevronDown } from 'lucide-react';
 
 function UserLayout() {
   const user = useAuthStore((s) => s.user);
@@ -67,6 +66,7 @@ function UserLayout() {
   );
   const [deliveryDropdownOpen, setDeliveryDropdownOpen] = useState(false);
   const [showLocationTooltip, setShowLocationTooltip] = useState(false);
+  const [showBatchTooltip, setShowBatchTooltip] = useState(false);
 
   const changeDelivery = (method: "Dorm Drop" | "Clg Drop") => {
     setDeliveryMethod(method);
@@ -99,45 +99,30 @@ function UserLayout() {
     <div className="flex flex-col h-screen bg-[#f8fafc] text-slate-800 relative overflow-hidden">
       {/* Orange Header matching screenshots */}
       <header className="bg-brand text-white h-[56px] px-4 shrink-0 shadow-md flex items-center justify-between relative z-50">
-        {/* Left: Dropdown Delivery Selector */}
-        <div className="relative">
+        {/* Left: Batch Number Icon Button (Location style) */}
+        <div className="flex items-center gap-1.5 relative">
           <button
-            onClick={() => setDeliveryDropdownOpen(!deliveryDropdownOpen)}
-            className="flex items-center gap-1 text-[10px] font-black text-white uppercase tracking-wider hover:bg-white/20 transition py-1.5 px-3 bg-white/10 border border-white/20 rounded-full"
+            onClick={() => {
+              setShowBatchTooltip(!showBatchTooltip);
+              setShowLocationTooltip(false);
+            }}
+            className="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center hover:bg-white/10 transition active:scale-95 text-white cursor-pointer"
+            title="Batch Info"
           >
-            <span>{deliveryMethod}</span>
-            <ChevronDown className={`w-3 h-3 text-white/80 transition-transform duration-200 ${deliveryDropdownOpen ? "rotate-180" : ""}`} />
+            <Hash className="w-4 h-4" />
           </button>
 
-          {deliveryDropdownOpen && (
-            <div className="absolute top-full left-0 mt-1.5 bg-white border border-slate-200 rounded-xl shadow-xl z-50 p-1 w-36 text-slate-800 animate-fade-in">
-              <button
-                onClick={() => changeDelivery("Dorm Drop")}
-                className={`w-full text-left px-3 py-2 rounded-lg text-xs font-bold transition ${
-                  deliveryMethod === "Dorm Drop"
-                    ? "bg-brand/10 text-brand font-black"
-                    : "hover:bg-slate-50 text-slate-700"
-                }`}
-              >
-                🏠 Dorm Drop
-              </button>
-              <button
-                onClick={() => changeDelivery("Clg Drop")}
-                className={`w-full text-left px-3 py-2 rounded-lg text-xs font-bold transition ${
-                  deliveryMethod === "Clg Drop"
-                    ? "bg-brand/10 text-brand font-black"
-                    : "hover:bg-slate-50 text-slate-700"
-                }`}
-              >
-                🎒 Clg Drop
-              </button>
+          {showBatchTooltip && (
+            <div className="absolute left-0 top-full mt-2 bg-slate-950 text-white rounded-xl shadow-2xl p-3 z-50 w-44 flex flex-col gap-1.5 animate-fade-in">
+              <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider block">BATCH NUMBER</span>
+              <span className="text-xs font-bold text-white block">Batch {user?.batchId || '—'}</span>
             </div>
           )}
         </div>
 
         {/* Center: VJ Logo transparent, no text, no white capsule background wrapper */}
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center select-none pointer-events-none">
-          <img src="/vjhomefoods/vj-logo-transparent.png" alt="VJ Logo" className="h-11 object-contain" />
+          <img src="/vj-logo-transparent.png" alt="VJ Logo" className="h-11 object-contain" />
         </div>
 
         {/* Right: Map Pin (no logout option here) */}
@@ -170,15 +155,13 @@ function UserLayout() {
 
       {/* Page Content */}
       <main className="flex-1 overflow-hidden flex flex-col relative pb-[76px]">
-        <div className="flex-1 flex flex-col overflow-hidden">
-          <Routes>
-            <Route path="dashboard" element={<HomeScreen />} />
-            <Route path="menu" element={<MenuScreen />} />
-            <Route path="bills" element={<BillsScreen />} />
-            <Route path="profile" element={<ProfileScreen />} />
-            <Route path="*" element={<Navigate to="dashboard" replace />} />
-          </Routes>
-        </div>
+        <Routes>
+          <Route path="dashboard" element={<HomeScreen />} />
+          <Route path="menu" element={<MenuScreen />} />
+          <Route path="bills" element={<BillsScreen />} />
+          <Route path="profile" element={<ProfileScreen />} />
+          <Route path="*" element={<Navigate to="dashboard" replace />} />
+        </Routes>
       </main>
 
       {/* Bottom Floating Capsule Navigation matching screenshots */}
@@ -383,7 +366,7 @@ export default function App() {
   }, [initialize]);
 
   return (
-    <BrowserRouter basename="/vjhomefoods">
+    <BrowserRouter>
       <Suspense fallback={
         <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center gap-3">
           <div className="w-8 h-8 border-[3px] border-slate-200 border-t-brand rounded-full animate-spin" />

@@ -12,19 +12,19 @@ const MEALS: Record<MealType, {
 }> = {
   breakfast: {
     title: 'Breakfast', tagline: 'Start your day with warmth & tradition',
-    image: '/vjhomefoods/VJ WEBSITE BREAKFAST.jpg',
+    image: '/VJ WEBSITE BREAKFAST.jpg',
     delivery: '7:00 AM', cancel: '',
     items: ['Idiyappam with Coconut Milk', 'Idly with Kadala Curry', 'Mixed Protein Salad', 'Fruit Salad', 'Ghee Podi Thattu Idly', 'Veg/Non-Veg Sandwich'],
   },
   lunch: {
     title: 'Lunch', tagline: 'Heartfelt midday nourishment',
-    image: '/vjhomefoods/VJ WEBSITE LUNCH .avif',
+    image: '/VJ WEBSITE LUNCH .avif',
     delivery: '12:00 PM', cancel: '',
     items: ['Variety Rice with Poriyal', 'Veg/Non-Veg Meals', 'Veg/Chicken Biryani', 'Mini Meals', 'Ghee Rice with Chicken Curry', 'Veg/Egg Biryani with Raitha', 'Veg/Non-Veg Special Meals'],
   },
   dinner: {
     title: 'Dinner', tagline: 'A wholesome close to your day',
-    image: '/vjhomefoods/VJ WEBSITE DINNER .jpg',
+    image: '/VJ WEBSITE DINNER .jpg',
     delivery: '8:00 PM', cancel: '',
     items: ['Paniyaram with Chutney', 'Veggies Dosa with Sambar & Chutney', 'Mini Podi Idly with Chutney', 'Ragi Rotti with Chutney', 'Chapathi with Curry', 'Parotta with Gravy'],
   },
