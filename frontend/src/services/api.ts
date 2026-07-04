@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-let rawBaseURL = import.meta.env.VITE_API_URL as string || 'https://vjhomefoods.onrender.com/api';
+let rawBaseURL = import.meta.env.VITE_API_URL as string || 'http://localhost:5002';
 // Remove trailing slash if any
 rawBaseURL = rawBaseURL.replace(/\/$/, '');
 // Append /api if not already present
