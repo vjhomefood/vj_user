@@ -1,13 +1,5 @@
 {
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
-  ],
-  "env": {
-    "VITE_API_URL": "https://vj-user.onrender.com/api"
-  },
-  "build": {
-    "env": {
-      "VITE_API_URL": "https://vj-user.onrender.com/api"
-    }
-  }
+  ]
 }

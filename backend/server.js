@@ -8,6 +8,7 @@ const app = express();
 
 // ── Allowed Origins ───────────────────────────────────────────────────────────
 const allowedOrigins = [
+  'https://vj-user.vercel.app',
   'https://vjhomefoods.vercel.app',
   'https://www.vjhomefoods.com',
   'https://vjhomefoods.com',
