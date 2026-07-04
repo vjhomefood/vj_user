@@ -213,7 +213,7 @@ export default function IngredientsSection() {
       {/* Right side image: slides in from right, rotated slightly counter-clockwise, positioned on the edge of the viewport matching the screenshot */}
       <motion.div
         style={{ x: rightX, rotate: rightRotate, y: "-50%" }}
-        className="absolute right-[-15%] sm:right-[-11%] xl:right-[-8%] 2xl:left-[-5%] top-1/2 w-[28vw] max-w-[420px] h-[85vh] max-h-[850px] rounded-[4.5rem] overflow-hidden shadow-[0_30px_60px_rgba(10,10,10,0.15)] hidden md:block border border-heritage-dark/5 z-0 pointer-events-none"
+        className="absolute right-[-15%] sm:right-[-11%] xl:right-[-8%] 2xl:right-[-5%] top-1/2 w-[28vw] max-w-[420px] h-[85vh] max-h-[850px] rounded-[4.5rem] overflow-hidden shadow-[0_30px_60px_rgba(10,10,10,0.15)] hidden md:block border border-heritage-dark/5 z-0 pointer-events-none"
       >
         <img 
           src="/VJ WEBSITE SIDE 2.jpg"
