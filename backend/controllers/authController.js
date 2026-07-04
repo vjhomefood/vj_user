@@ -225,11 +225,44 @@ const deliveryPartnerLogin = async (req, res) => {
   }
 };
 
+// ── Change User (Batch) Password ───────────────────────────────────────────
+const changeUserPassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword, confirmPassword } = req.body;
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      return res.status(400).json({ message: 'All three password fields are required' });
+    }
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({ message: 'New password and confirmation do not match' });
+    }
+    if (newPassword.length < 6) {
+      return res.status(400).json({ message: 'New password must be at least 6 characters' });
+    }
+
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) return res.status(400).json({ message: 'Current password is incorrect' });
+
+    user.password = await bcrypt.hash(newPassword, 10);
+    await user.save();
+
+    // Revoke all active sessions so user must re-login
+    await Token.deleteMany({ userId: user._id });
+
+    res.json({ message: 'Password changed successfully. Please log in again.' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
 module.exports = {
   adminLogin,
   userLogin,
   login,
   logout,
   changeAdminPassword,
+  changeUserPassword,
   deliveryPartnerLogin
 };

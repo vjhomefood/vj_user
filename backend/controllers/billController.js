@@ -59,7 +59,7 @@ const generateBills = async (req, res) => {
     const members = await Member.find({ batchId, status: 'Active' });
     if (!members.length) return res.json({ generated: 0, bills: [], message: 'No active members in batch' });
 
-    const menus   = await DailyMenu.find({ date: { $gte: start, $lte: end } });
+    const menus   = await DailyMenu.find({ date: { $gte: start, $lte: end } }).lean();
     const menuMap = {};
     menus.forEach(m => { menuMap[m.date] = m; });
 

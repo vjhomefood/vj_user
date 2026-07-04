@@ -15,7 +15,7 @@ const getMenu = async (req, res) => {
       return res.json(cached);
     }
 
-    const menu = await DailyMenu.findOne({ date }).select('date breakfast lunch dinner');
+    const menu = await DailyMenu.findOne({ date }).select('date breakfast lunch dinner').lean();
     const result = menu || null;
 
     // Cache the result (null is also cached to avoid repeated DB hits for missing dates)
@@ -41,7 +41,8 @@ const getMenuRange = async (req, res) => {
     // Select only the fields the billing screen needs
     const menus = await DailyMenu.find(filter)
       .select('date breakfast lunch dinner')
-      .sort({ date: 1 });
+      .sort({ date: 1 })
+      .lean();
     res.json(menus);
   } catch (err) {
     res.status(500).json({ message: err.message });

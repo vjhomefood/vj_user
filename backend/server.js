@@ -6,8 +6,29 @@ const connectDB = require('./config/db');
 
 const app = express();
 
-// ── Middleware ────────────────────────────────────────────────────────────────
-app.use(cors());
+// ── Allowed Origins ───────────────────────────────────────────────────────────
+const allowedOrigins = [
+  'https://vjhomefoods.vercel.app',
+  'https://www.vjhomefoods.com',
+  'https://vjhomefoods.com',
+  'http://localhost:3000',
+  'http://localhost:5173',
+];
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Allow requests with no origin (e.g. curl, Postman, mobile apps)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    callback(new Error(`CORS: origin ${origin} not allowed`));
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));   // handle preflight for all routes
 app.use(compression());          // gzip all responses → smaller payloads
 app.use(express.json());
 
@@ -29,7 +50,7 @@ app.get('/api/health', (_req, res) =>
 );
 
 // ── Start only after DB connects ──────────────────────────────────────────────
-const PORT = process.env.PORT || 5002;
+const PORT = process.env.PORT || 5001;
 
 async function startServer() {
   await connectDB();

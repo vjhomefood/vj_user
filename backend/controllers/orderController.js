@@ -40,7 +40,7 @@ const saveOrders = async (req, res) => {
 
     // Recalculate summary
     const allOrders = await DailyOrder.find({ date });
-    const savedMenu = await DailyMenu.findOne({ date });
+    const savedMenu = await DailyMenu.findOne({ date }).lean();
     let bfTotal = 0, lunchTotal = 0, dinnerTotal = 0, income = 0;
     allOrders.forEach(o => {
       bfTotal += o.bf;
@@ -166,7 +166,7 @@ const getOrdersRange = async (req, res) => {
 
     // Collect unique dates so we can attach menu prices
     const uniqueDates = [...new Set(orders.map(o => o.date))];
-    const menus = await DailyMenu.find({ date: { $in: uniqueDates } });
+    const menus = await DailyMenu.find({ date: { $in: uniqueDates } }).lean();
     const menuMap = {};
     menus.forEach(m => { menuMap[m.date] = m; });
 
@@ -378,11 +378,7 @@ const saveBatchOrders = async (req, res) => {
       if (updatedOrder.lunch === 0) updatedOrder.lunchQty = 0;
       if (updatedOrder.dinner === 0) updatedOrder.dinnerQty = 0;
 
-      // Enforce strict count values: count must be 0 or 1 (never qty like 4)
-      // This also heals old DB records where bf/lunch/dinner held the quantity
-      updatedOrder.bf     = updatedOrder.bfQty    > 0 ? 1 : 0;
-      updatedOrder.lunch  = updatedOrder.lunchQty  > 0 ? 1 : 0;
-      updatedOrder.dinner = updatedOrder.dinnerQty > 0 ? 1 : 0;
+
 
       return {
         updateOne: {
@@ -398,7 +394,7 @@ const saveBatchOrders = async (req, res) => {
     }
 
     const allOrders = await DailyOrder.find({ date });
-    const savedMenu = await DailyMenu.findOne({ date });
+    const savedMenu = await DailyMenu.findOne({ date }).lean();
     let bfTotal = 0, lunchTotal = 0, dinnerTotal = 0, income = 0;
     allOrders.forEach(o => {
       bfTotal += o.bfQty || 0;

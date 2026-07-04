@@ -6,19 +6,19 @@ const dailyOrderSchema = new mongoose.Schema({
   memberId: { type: String, required: true },
   memberName: { type: String, required: true },
   
-  bf: { type: Number, default: 1, enum: [0, 1] },
+  bf: { type: Number, default: 1, min: 0 },
   bfQty: { type: Number, default: 1, min: 0 },
   bfType: { type: String, default: 'nonveg' },
   bfAddons: { type: Array, default: [] },
   bfReceived: { type: Boolean, default: false },
 
-  lunch: { type: Number, default: 1, enum: [0, 1] },
+  lunch: { type: Number, default: 1, min: 0 },
   lunchQty: { type: Number, default: 1, min: 0 },
   lunchType: { type: String, default: 'nonveg' },
   lunchAddons: { type: Array, default: [] },
   lunchReceived: { type: Boolean, default: false },
 
-  dinner: { type: Number, default: 1, enum: [0, 1] },
+  dinner: { type: Number, default: 1, min: 0 },
   dinnerQty: { type: Number, default: 1, min: 0 },
   dinnerType: { type: String, default: 'nonveg' },
   dinnerAddons: { type: Array, default: [] },
