@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Playfair Display", serif;
+  --font-cormorant: "Cormorant Garamond", serif;
+  
+  --color-heritage-gold: #D4AF37;
+  --color-heritage-saffron: #FF9933;
+  --color-heritage-accent: #f25b2a;
+  --color-heritage-dark: #0A0A0A;
+
+  /* Brand colors matching the screenshots */
+  --color-brand: #ff6600;
+  --color-brand-dark: #e65c00;
+}
+
+@layer base {
+  body {
+    @apply bg-heritage-dark text-white font-sans antialiased;
+  }
+}
+
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+/* Lenis Smooth Scroll Core Styles */
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-down {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in    { animation: fade-in 0.25s ease both; }
+.animate-slide-down { animation: slide-down 0.2s ease both; }
